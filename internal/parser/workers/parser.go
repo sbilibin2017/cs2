@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sbilibin2017/cs2/internal/logger"
-	"github.com/sbilibin2017/cs2/internal/types"
+	"github.com/sbilibin2017/cs2/internal/parser/types"
 )
 
 type GameParser interface {
@@ -274,7 +274,7 @@ func convertGameParserToGameDB(ctx context.Context, gameParserChan <-chan types.
 										Kast:           stat.Kast,
 										Rating:         stat.Rating,
 
-										Win:       win,
+										RoundWin:  win,
 										UpdatedAt: time.Now().UTC(),
 									}
 

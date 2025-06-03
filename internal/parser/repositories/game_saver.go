@@ -5,7 +5,7 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/sbilibin2017/cs2/internal/logger"
-	"github.com/sbilibin2017/cs2/internal/types"
+	"github.com/sbilibin2017/cs2/internal/parser/types"
 )
 
 type GameSaverRepository struct {
@@ -28,9 +28,6 @@ func (r *GameSaverRepository) Save(ctx context.Context, games []types.GameDB) er
 			g.ID,
 			g.BeginAt,
 			g.GameID,
-			g.RoundID,
-			g.RoundOutcomeID,
-			g.RoundIsCT,
 			g.LeagueID,
 			g.SerieID,
 			g.TournamentID,
@@ -50,7 +47,10 @@ func (r *GameSaverRepository) Save(ctx context.Context, games []types.GameDB) er
 			g.Adr,
 			g.Kast,
 			g.Rating,
-			g.Win,
+			g.RoundID,
+			g.RoundOutcomeID,
+			g.RoundIsCT,
+			g.RoundWin,
 			g.UpdatedAt,
 		)
 		if err != nil {
@@ -67,36 +67,37 @@ func (r *GameSaverRepository) Save(ctx context.Context, games []types.GameDB) er
 	return nil
 }
 
-const gameSaveQuery = `
-	INSERT INTO games (
-		id,
-		begin_at,
-		game_id,
-		round_id,
-		round_outcome_id,
-		round_is_ct,
-		league_id,
-		serie_id,
-		tournament_id,
-		tier_id,
-		map_id,
-		team_id,
-		team_opponent_id,
-		player_id,
-		player_opponent_id,
-		kills,
-		deaths,
-		assists,
-		headshots,
-		flash_assists,
-		first_kills_diff,
-		k_d_diff,
-		adr,
-		kast,
-		rating,
-		win,
-		updated_at
-	) VALUES (
-		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-	)
+const gameSaveQuery = `	
+INSERT INTO games (
+	id,
+	begin_at,
+	game_id,
+	league_id,
+	serie_id,
+	tournament_id,
+	tier_id,
+	map_id,
+	team_id,
+	team_opponent_id,
+	player_id,
+	player_opponent_id,
+	kills,
+	deaths,
+	assists,
+	headshots,
+	flash_assists,
+	first_kills_diff,
+	k_d_diff,
+	adr,
+	kast,
+	rating,
+	round_id,
+	round_outcome_id,
+	round_is_ct,
+	round_win,
+	updated_at
+) 
+VALUES (
+	?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+)
 `

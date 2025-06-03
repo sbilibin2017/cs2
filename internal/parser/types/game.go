@@ -80,39 +80,38 @@ type GameParser struct {
 }
 
 type GameDB struct {
-	ID uuid.UUID `json:"id" ch:"id"`
+	ID uuid.UUID `json:"id"`
 
-	BeginAt time.Time `json:"begin_at" ch:"begin_at"`
+	BeginAt time.Time `json:"begin_at"`
 
-	GameID int32 `json:"game_id" ch:"game_id"`
+	GameID int32 `json:"game_id"`
 
-	RoundID        int32 `json:"round_id" ch:"round_id"`
-	RoundOutcomeID int32 `json:"outcome" ch:"outcome"`
-	RoundIsCT      int32 `json:"is_ct" ch:"is_ct"`
+	LeagueID     int32 `json:"league_id"`
+	SerieID      int32 `json:"serie_id"`
+	TournamentID int32 `json:"tournament_id"`
+	TierID       int32 `json:"tier_id"`
+	MapID        int32 `json:"map_id"`
 
-	LeagueID     int32 `json:"league_id" ch:"league_id"`
-	SerieID      int32 `json:"serie_id" ch:"serie_id"`
-	TournamentID int32 `json:"tournament_id" ch:"tournament_id"`
-	TierID       int32 `json:"tier_id" ch:"tier_id"`
-	MapID        int32 `json:"map_id" ch:"map_id"`
+	TeamID           int32 `json:"team_id" `
+	TeamOpponentID   int32 `json:"team_opponent_id"`
+	PlayerID         int32 `json:"player_id"`
+	PlayerOpponentID int32 `json:"player_opponent_id"`
 
-	TeamID           int32 `json:"team_id" ch:"team_id"`
-	TeamOpponentID   int32 `json:"team_opponent_id" ch:"team_opponent_id"`
-	PlayerID         int32 `json:"player_id" ch:"player_id"`
-	PlayerOpponentID int32 `json:"player_opponent_id" ch:"player_opponent_id"`
+	Kills          int32   `json:"kills"`
+	Deaths         int32   `json:"deaths"`
+	Assists        int32   `json:"assists"`
+	Headshots      int32   `json:"headshots"`
+	FlashAssists   int32   `json:"flash_assists"`
+	FirstKillsDiff int32   `json:"first_kills_diff"`
+	KDDiff         int32   `json:"k_d_diff"`
+	Adr            float32 `json:"adr"`
+	Kast           float32 `json:"kast"`
+	Rating         float32 `json:"rating"`
 
-	Kills          int32   `json:"kills" ch:"kills"`
-	Deaths         int32   `json:"deaths" ch:"deaths"`
-	Assists        int32   `json:"assists" ch:"assists"`
-	Headshots      int32   `json:"headshots" ch:"headshots"`
-	FlashAssists   int32   `json:"flash_assists" ch:"flash_assists"`
-	FirstKillsDiff int32   `json:"first_kills_diff" ch:"first_kills_diff"`
-	KDDiff         int32   `json:"k_d_diff" ch:"k_d_diff"`
-	Adr            float32 `json:"adr" ch:"adr"`
-	Kast           float32 `json:"kast" ch:"kast"`
-	Rating         float32 `json:"rating" ch:"rating"`
+	RoundID        int32 `json:"round_id"`
+	RoundOutcomeID int32 `json:"round_outcome_id"`
+	RoundIsCT      int32 `json:"round_is_ct"`
+	RoundWin       int32 `json:"round_win"`
 
-	Win int32 `json:"win" db:"win"`
-
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
