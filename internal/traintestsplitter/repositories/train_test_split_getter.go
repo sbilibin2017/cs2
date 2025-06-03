@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/sbilibin2017/cs2/internal/logger"
@@ -36,6 +37,7 @@ func (r *TrainTestSplitGetterRepository) Get(
 		split.TrainGameIDs = trainIDs
 		split.TestGameIDs = testIDs
 	}
+	split.UpdatedAt = time.Now()
 
 	return &split, nil
 }

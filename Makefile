@@ -4,6 +4,9 @@ run-parser:
 run-traintestsplitter:
 	go run ./cmd/traintestsplitter/main.go -d "clickhouse://user:password@localhost:9000/db"
 
+run-historyaggregators:
+	go run ./cmd/historyaggregators/main.go -d "clickhouse://user:password@localhost:9000/db"
+
 mockgen:	
 	mockgen -source=$(file) \
 		-destination=$(dir $(file))$(notdir $(basename $(file)))_mock.go \
