@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/sbilibin2017/cs2/internal/logger"
-	"github.com/sbilibin2017/cs2/internal/types"
+	"github.com/sbilibin2017/cs2/internal/parser/types"
 )
 
 func writeTestGameFile(t *testing.T, dir, filename string, game *types.GameParser) {
@@ -38,7 +38,7 @@ func TestGameParserRepository_Next(t *testing.T) {
 	writeTestGameFile(t, tempDir, "game1.json", game1)
 	writeTestGameFile(t, tempDir, "game2.json", game2)
 
-	repo := NewGameParserRepository(tempDir)
+	repo := NewGameProviderRepository(tempDir)
 
 	// First Next should return game1 immediately
 	gotGame1, err := repo.Next(ctx)
@@ -54,7 +54,7 @@ func TestGameParserRepository_Next(t *testing.T) {
 
 func TestGameParserRepository_Next_ContextCanceled(t *testing.T) {
 	tempDir := t.TempDir()
-	repo := NewGameParserRepository(tempDir)
+	repo := NewGameProviderRepository(tempDir)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -63,9 +63,9 @@ func TestGameParserRepository_Next_ContextCanceled(t *testing.T) {
 	require.ErrorIs(t, err, context.Canceled)
 }
 
-func TestGameParserRepository_Next_ReadDirError(t *testing.T) {
+func TestGameParserRepository_Next_ReadDirError2(t *testing.T) {
 	// Pass an invalid directory path to trigger os.ReadDir error
-	repo := NewGameParserRepository("/non/existing/directory")
+	repo := NewGameProviderRepository("/non/existing/directory")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -83,7 +83,7 @@ func TestGameParserRepository_Next_ReadFileError(t *testing.T) {
 	err := os.WriteFile(filePath, []byte(`{}`), 0000) // no permissions
 	require.NoError(t, err)
 
-	repo := NewGameParserRepository(tempDir)
+	repo := NewGameProviderRepository(tempDir)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -103,7 +103,7 @@ func TestGameParserRepository_Next_JSONUnmarshalError(t *testing.T) {
 	err := os.WriteFile(filePath, []byte(`{ invalid json `), 0644)
 	require.NoError(t, err)
 
-	repo := NewGameParserRepository(tempDir)
+	repo := NewGameProviderRepository(tempDir)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -116,7 +116,7 @@ func TestGameParserRepository_Next_JSONUnmarshalError(t *testing.T) {
 
 func TestGameParserRepository_Next_NoFilesWaits(t *testing.T) {
 	tempDir := t.TempDir()
-	repo := NewGameParserRepository(tempDir) // empty dir, no JSON files
+	repo := NewGameProviderRepository(tempDir) // empty dir, no JSON files
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1100*time.Millisecond)
 	defer cancel()

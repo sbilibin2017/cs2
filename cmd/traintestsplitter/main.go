@@ -7,11 +7,12 @@ import (
 	"net/url"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/sbilibin2017/cs2/internal/logger"
-	"github.com/sbilibin2017/cs2/internal/parser/repositories"
-	"github.com/sbilibin2017/cs2/internal/parser/workers"
+	"github.com/sbilibin2017/cs2/internal/traintestsplitter/repositories"
+	"github.com/sbilibin2017/cs2/internal/traintestsplitter/workers"
 )
 
 func main() {
@@ -23,13 +24,15 @@ func main() {
 }
 
 var (
-	flagSource      string
-	flagLogLevel    string
-	flagDatabaseDSN string
+	flagDestinationDir string
+	flagDumpInterval   time.Duration
+	flagLogLevel       string
+	flagDatabaseDSN    string
 )
 
 func parseFlags() {
-	flag.StringVar(&flagSource, "s", "./data/raw", "Path to data directory")
+	flag.StringVar(&flagDestinationDir, "s", "./data/train_test_splits", "Path to train test splits directory")
+	flag.DurationVar(&flagDumpInterval, "i", time.Duration(1*time.Second), "Dump split to file interval")
 	flag.StringVar(&flagLogLevel, "l", "info", "Log level (e.g., debug, info, warn, error)")
 	flag.StringVar(&flagDatabaseDSN, "d", "clickhouse://user:password@localhost:9000/db", "Database DSN (e.g., ClickHouse DSN)")
 
@@ -57,17 +60,18 @@ func run() error {
 	}
 	logger.Log.Info("Connected to ClickHouse")
 
-	gameProviderRepository := repositories.NewGameProviderRepository(flagSource)
-	gameSaverRepository := repositories.NewGameSaverRepository(db)
+	trainTestSplitGetter := repositories.NewTrainTestSplitGetterRepository(db)
+	trainTestSplitSaverRepository := repositories.NewTrainTestSplitSaverRepository(flagDestinationDir)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
 	logger.Log.Info("Starting parser worker goroutine")
-	go workers.StartParserWorker(
+	go workers.StartTrainTestSplitWorker(
 		ctx,
-		gameProviderRepository,
-		gameSaverRepository,
+		trainTestSplitGetter,
+		trainTestSplitSaverRepository,
+		flagDumpInterval,
 	)
 
 	logger.Log.Info("Waiting for termination signal (SIGINT/SIGTERM)...")

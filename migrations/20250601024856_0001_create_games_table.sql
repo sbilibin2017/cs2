@@ -4,10 +4,7 @@ CREATE TABLE games (
     id UUID,
     begin_at DateTime,
 
-    game_id Int32,
-    round_id Int32,
-    round_outcome_id Int32,
-    round_is_ct Int32,
+    game_id Int32,    
 
     league_id Int32,
     serie_id Int32,
@@ -31,7 +28,11 @@ CREATE TABLE games (
     kast Float32,
     rating Float32,
 
-    win Int32,
+    round_id Int32,
+    round_outcome_id Int32,
+    round_is_ct Int32,
+    round_win Int32,
+    
     updated_at DateTime
 ) 
 ENGINE = ReplacingMergeTree(updated_at)

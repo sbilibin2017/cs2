@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/sbilibin2017/cs2/internal/types"
+	"github.com/sbilibin2017/cs2/internal/parser/types"
 )
 
 func createSampleGameParser() types.GameParser {
@@ -155,7 +155,7 @@ func TestSaveGameDB_HandlesEmptyAndErrors(t *testing.T) {
 			Adr:              80.0,
 			Kast:             75.0,
 			Rating:           1.1,
-			Win:              1,
+			RoundWin:         1,
 			UpdatedAt:        time.Now(),
 		},
 	}

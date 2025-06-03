@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	types "github.com/sbilibin2017/cs2/internal/types"
+	types "github.com/sbilibin2017/cs2/internal/parser/types"
 )
 
 // MockGameParser is a mock of GameParser interface.

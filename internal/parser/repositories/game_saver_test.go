@@ -8,7 +8,8 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/docker/go-connections/nat"
 	"github.com/google/uuid"
-	"github.com/sbilibin2017/cs2/internal/types"
+	"github.com/sbilibin2017/cs2/internal/parser/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -17,38 +18,33 @@ import (
 
 const createTableQuery = `
 CREATE TABLE IF NOT EXISTS games (
-    id UUID,
-    begin_at DateTime,
-
-    game_id Int32,
-    round_id Int32,
-    round_outcome_id Int32,
-    round_is_ct Int32,
-
-    league_id Int32,
-    serie_id Int32,
-    tournament_id Int32,
-    tier_id Int32,
-    map_id Int32,
-
-    team_id Int32,
-    team_opponent_id Int32,
-    player_id Int32,
-    player_opponent_id Int32,
-
-    kills Int32,
-    deaths Int32,
-    assists Int32,
-    headshots Int32,
-    flash_assists Int32,
-    first_kills_diff Int32,
-    k_d_diff Int32,
-    adr Float32,
-    kast Float32,
-    rating Float32,
-
-    win Int32,
-    updated_at DateTime
+	id UUID,
+	begin_at DateTime,
+	game_id Int32,
+	league_id Int32,
+	serie_id Int32,
+	tournament_id Int32,
+	tier_id Int32,
+	map_id Int32,
+	team_id Int32,
+	team_opponent_id Int32,
+	player_id Int32,
+	player_opponent_id Int32,
+	kills Int32,
+	deaths Int32,
+	assists Int32,
+	headshots Int32,
+	flash_assists Int32,
+	first_kills_diff Int32,
+	k_d_diff Int32,
+	adr Float32,
+	kast Float32,
+	rating Float32,
+	round_id Int32,
+	round_outcome_id Int32,
+	round_is_ct Int32,
+	round_win Int32,
+	updated_at DateTime
 ) ENGINE = Memory
 `
 
@@ -119,6 +115,7 @@ func TestGameSaverRepository_Save(t *testing.T) {
 			RoundID:          1,
 			RoundOutcomeID:   1,
 			RoundIsCT:        1,
+			RoundWin:         1,
 			LeagueID:         10,
 			SerieID:          20,
 			TournamentID:     30,
@@ -138,7 +135,6 @@ func TestGameSaverRepository_Save(t *testing.T) {
 			Adr:              75.5,
 			Kast:             65.0,
 			Rating:           1.15,
-			Win:              1,
 			UpdatedAt:        time.Now().Truncate(time.Second),
 		},
 		{
@@ -148,6 +144,7 @@ func TestGameSaverRepository_Save(t *testing.T) {
 			RoundID:          2,
 			RoundOutcomeID:   0,
 			RoundIsCT:        0,
+			RoundWin:         0,
 			LeagueID:         11,
 			SerieID:          21,
 			TournamentID:     31,
@@ -167,7 +164,6 @@ func TestGameSaverRepository_Save(t *testing.T) {
 			Adr:              80.2,
 			Kast:             70.5,
 			Rating:           1.35,
-			Win:              0,
 			UpdatedAt:        time.Now().Truncate(time.Second),
 		},
 	}
@@ -175,7 +171,6 @@ func TestGameSaverRepository_Save(t *testing.T) {
 	err := repo.Save(ctx, gameDBRecords)
 	require.NoError(t, err)
 
-	// Query back inserted data to verify
 	rows, err := conn.Query(ctx, "SELECT game_id, kills, deaths FROM games ORDER BY game_id")
 	require.NoError(t, err)
 	defer rows.Close()

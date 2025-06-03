@@ -1,6 +1,9 @@
 run-parser:
 	go run ./cmd/parser/main.go -d "clickhouse://user:password@localhost:9000/db"
 
+run-traintestsplitter:
+	go run ./cmd/traintestsplitter/main.go -d "clickhouse://user:password@localhost:9000/db"
+
 mockgen:	
 	mockgen -source=$(file) \
 		-destination=$(dir $(file))$(notdir $(basename $(file)))_mock.go \
@@ -9,7 +12,7 @@ mockgen:
 test:
 	go test ./internal/... -cover	
 
-staticcheck:
+lint:
 	staticcheck ./internal/... 
 
 migrate:
