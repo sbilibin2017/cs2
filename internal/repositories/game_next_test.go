@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/sbilibin2017/cs2/internal/logger"
-	"github.com/sbilibin2017/cs2/internal/parser/types"
+	"github.com/sbilibin2017/cs2/internal/types"
 )
 
 func writeTestGameFile(t *testing.T, dir, filename string, game *types.GameParser) {
@@ -32,20 +32,17 @@ func TestGameParserRepository_Next(t *testing.T) {
 
 	tempDir := t.TempDir()
 
-	// Write both game files BEFORE calling Next
 	game1 := &types.GameParser{ID: 1}
 	game2 := &types.GameParser{ID: 2}
 	writeTestGameFile(t, tempDir, "game1.json", game1)
 	writeTestGameFile(t, tempDir, "game2.json", game2)
 
-	repo := NewGameProviderRepository(tempDir)
+	repo := NewGameNextRepository(tempDir)
 
-	// First Next should return game1 immediately
 	gotGame1, err := repo.Next(ctx)
 	require.NoError(t, err)
 	require.Equal(t, game1.ID, gotGame1.ID)
 
-	// Second Next should return game2 immediately (no blocking)
 	gotGame2, err := repo.Next(ctx)
 	require.NoError(t, err)
 	require.Equal(t, game2.ID, gotGame2.ID)
@@ -54,7 +51,7 @@ func TestGameParserRepository_Next(t *testing.T) {
 
 func TestGameParserRepository_Next_ContextCanceled(t *testing.T) {
 	tempDir := t.TempDir()
-	repo := NewGameProviderRepository(tempDir)
+	repo := NewGameNextRepository(tempDir)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -64,8 +61,7 @@ func TestGameParserRepository_Next_ContextCanceled(t *testing.T) {
 }
 
 func TestGameParserRepository_Next_ReadDirError2(t *testing.T) {
-	// Pass an invalid directory path to trigger os.ReadDir error
-	repo := NewGameProviderRepository("/non/existing/directory")
+	repo := NewGameNextRepository("/non/existing/directory")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -78,12 +74,11 @@ func TestGameParserRepository_Next_ReadDirError2(t *testing.T) {
 
 func TestGameParserRepository_Next_ReadFileError(t *testing.T) {
 	tempDir := t.TempDir()
-	// Create a dummy JSON file but make it unreadable (permission denied)
 	filePath := filepath.Join(tempDir, "game.json")
-	err := os.WriteFile(filePath, []byte(`{}`), 0000) // no permissions
+	err := os.WriteFile(filePath, []byte(`{}`), 0000)
 	require.NoError(t, err)
 
-	repo := NewGameProviderRepository(tempDir)
+	repo := NewGameNextRepository(tempDir)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -91,19 +86,17 @@ func TestGameParserRepository_Next_ReadFileError(t *testing.T) {
 	game, err := repo.Next(ctx)
 	require.Nil(t, game)
 	require.Error(t, err)
-	// On some systems it may be permission denied
 	require.Contains(t, err.Error(), "permission denied")
 }
 
 func TestGameParserRepository_Next_JSONUnmarshalError(t *testing.T) {
 	tempDir := t.TempDir()
 
-	// Write a malformed JSON file
 	filePath := filepath.Join(tempDir, "game.json")
 	err := os.WriteFile(filePath, []byte(`{ invalid json `), 0644)
 	require.NoError(t, err)
 
-	repo := NewGameProviderRepository(tempDir)
+	repo := NewGameNextRepository(tempDir)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -116,7 +109,7 @@ func TestGameParserRepository_Next_JSONUnmarshalError(t *testing.T) {
 
 func TestGameParserRepository_Next_NoFilesWaits(t *testing.T) {
 	tempDir := t.TempDir()
-	repo := NewGameProviderRepository(tempDir) // empty dir, no JSON files
+	repo := NewGameNextRepository(tempDir)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1100*time.Millisecond)
 	defer cancel()
@@ -127,6 +120,5 @@ func TestGameParserRepository_Next_NoFilesWaits(t *testing.T) {
 
 	require.Nil(t, game)
 	require.ErrorIs(t, err, context.DeadlineExceeded)
-	// Check that it waited at least ~1 second (the context timeout)
 	require.GreaterOrEqual(t, duration, 1*time.Second)
 }

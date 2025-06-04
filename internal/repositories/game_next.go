@@ -10,20 +10,20 @@ import (
 	"time"
 
 	"github.com/sbilibin2017/cs2/internal/logger"
-	"github.com/sbilibin2017/cs2/internal/parser/types"
+	"github.com/sbilibin2017/cs2/internal/types"
 )
 
-type GameProviderRepository struct {
+type GameNextRepository struct {
 	flagSourceDir string
 	files         []string
 	mu            sync.Mutex
 }
 
-func NewGameProviderRepository(flagSourceDir string) *GameProviderRepository {
-	return &GameProviderRepository{flagSourceDir: flagSourceDir}
+func NewGameNextRepository(flagSourceDir string) *GameNextRepository {
+	return &GameNextRepository{flagSourceDir: flagSourceDir}
 }
 
-func (r *GameProviderRepository) Next(ctx context.Context) (*types.GameParser, error) {
+func (r *GameNextRepository) Next(ctx context.Context) (*types.GameParser, error) {
 	for {
 		select {
 		case <-ctx.Done():
