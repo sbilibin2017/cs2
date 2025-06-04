@@ -20,14 +20,16 @@ func main() {
 }
 
 var (
-	flagSource                 string
+	flagGameValidDir           string
 	flagTrainTestSplitFilePath string
+	flagLableEncodingFilePath  string
 	flagLogLevel               string
 )
 
 func parseFlags() {
-	flag.StringVar(&flagSource, "v", "./data/valid", "Path to data directory")
+	flag.StringVar(&flagGameValidDir, "v", "./data/valid", "Path to data directory")
 	flag.StringVar(&flagTrainTestSplitFilePath, "s", "./data/train_test_split/train_test_split.json", "Path to data directory")
+	flag.StringVar(&flagLableEncodingFilePath, "e", "./data/lable_encodings/player.json", "Path to data directory")
 	flag.StringVar(&flagLogLevel, "l", "info", "Log level (e.g., debug, info, warn, error)")
 
 	flag.Parse()
@@ -39,16 +41,24 @@ func run() error {
 		return err
 	}
 
-	trainTestSplitterRepository := repositories.NewTrainTestSplitterRepository(flagSource)
-	trainTestSplitSaverRepository := repositories.NewTrainTestSplitSaverRepository(flagTrainTestSplitFilePath)
+	lableEncoderRepository := repositories.NewLableEncoderRepository(
+		flagGameValidDir,
+	)
+	lableEncodingSaverRepository := repositories.NewLableEncodingSaverRepository(
+		flagLableEncodingFilePath,
+	)
+	trainTestSplitLoaderRepository := repositories.NewTrainTestSplitLoaderRepository(
+		flagTrainTestSplitFilePath,
+	)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	go workers.StartTrainTestSplitterWorker(
+	go workers.StartLableEncoderWorker(
 		ctx,
-		trainTestSplitterRepository,
-		trainTestSplitSaverRepository,
+		trainTestSplitLoaderRepository,
+		lableEncoderRepository,
+		lableEncodingSaverRepository,
 	)
 
 	<-ctx.Done()

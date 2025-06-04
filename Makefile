@@ -1,8 +1,14 @@
 run-parser:
-	go run ./cmd/parser/main.go -d "clickhouse://user:password@localhost:9000/db"
+	go run ./cmd/parser/main.go 
 
 run-traintestsplitter:
-	go run ./cmd/traintestsplitter/main.go -d "clickhouse://user:password@localhost:9000/db"
+	go run ./cmd/traintestsplitter/main.go 
+
+run-lableencoders:
+	go run ./cmd/lableencoders/main.go 
+
+run-datasetmaker:
+	go run ./cmd/datasetmaker/main.go 	
 
 run-historyaggregators:
 	go run ./cmd/historyaggregators/main.go -d "clickhouse://user:password@localhost:9000/db"
