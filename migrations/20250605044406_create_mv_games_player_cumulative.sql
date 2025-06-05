@@ -28,36 +28,35 @@ SELECT
     COUNT() OVER w AS total_games_cum,
     SUM(total_rounds) OVER w AS total_rounds_cum,
 
-    SUM(kills) OVER w AS total_kills,
-    SUM(deaths) OVER w AS total_deaths,
-    SUM(assists) OVER w AS total_assists,
-    SUM(headshots) OVER w AS total_headshots,
-    SUM(flash_assists) OVER w AS total_flash_assists,
-
-    SUM(first_kills_diff) OVER w AS total_first_kills_diff,
-    SUM(k_d_diff) OVER w AS total_k_d_diff,
-    SUM(adr) OVER w AS total_adr,          
-    SUM(kast) OVER w AS total_kast,        
-    SUM(rating) OVER w AS total_rating,    
+    SUM(kills) OVER w AS kills_total,
+    SUM(deaths) OVER w AS deaths_total,
+    SUM(assists) OVER w AS assists_total,
+    SUM(headshots) OVER w AS headshots_total,
+    SUM(flash_assists) OVER w AS flash_assists_total,
+    SUM(first_kills_diff) OVER w AS first_kills_diff_total,
+    SUM(k_d_diff) OVER w AS k_d_diff_total,
+    SUM(adr) OVER w AS adr_total,          
+    SUM(kast) OVER w AS kast_total,        
+    SUM(rating) OVER w AS rating_total,    
 
     -- Derived total per-round stats
-    total_kills / NULLIF(total_rounds_cum, 0) AS kills_per_round,
-    total_deaths / NULLIF(total_rounds_cum, 0) AS deaths_per_round,
-    total_assists / NULLIF(total_rounds_cum, 0) AS assists_per_round,
-    total_headshots / NULLIF(total_rounds_cum, 0) AS headshots_per_round,
-    total_flash_assists / NULLIF(total_rounds_cum, 0) AS flash_assists_per_round,
+    kills_total / NULLIF(total_rounds_cum, 0) AS kills_per_round,
+    deaths_total / NULLIF(total_rounds_cum, 0) AS deaths_per_round,
+    assists_total / NULLIF(total_rounds_cum, 0) AS assists_per_round,
+    headshots_total / NULLIF(total_rounds_cum, 0) AS headshots_per_round,
+    flash_assists_total / NULLIF(total_rounds_cum, 0) AS flash_assists_per_round,
 
     -- Derived total per-game stats
-    total_kills / NULLIF(total_games_cum, 0) AS kills_per_game,
-    total_deaths / NULLIF(total_games_cum, 0) AS deaths_per_game,
-    total_assists / NULLIF(total_games_cum, 0) AS assists_per_game,
-    total_headshots / NULLIF(total_games_cum, 0) AS headshots_per_game,
-    total_flash_assists / NULLIF(total_games_cum, 0) AS flash_assists_per_game,
-    total_first_kills_diff / NULLIF(total_games_cum, 0) AS first_kills_diff_per_game,
-    total_k_d_diff / NULLIF(total_games_cum, 0) AS kd_diff_per_game,
-    total_adr / NULLIF(total_games_cum, 0) AS adr_per_game,
-    total_kast / NULLIF(total_games_cum, 0) AS kast_per_game,
-    total_rating / NULLIF(total_games_cum, 0) AS rating_per_game
+    kills_total / NULLIF(total_games_cum, 0) AS kills_per_game,
+    deaths_total / NULLIF(total_games_cum, 0) AS deaths_per_game,
+    assists_total / NULLIF(total_games_cum, 0) AS assists_per_game,
+    headshots_total / NULLIF(total_games_cum, 0) AS headshots_per_game,
+    flash_assists_total / NULLIF(total_games_cum, 0) AS flash_assists_per_game,
+    first_kills_diff_total / NULLIF(total_games_cum, 0) AS first_kills_diff_per_game,
+    k_d_diff_total / NULLIF(total_games_cum, 0) AS kd_diff_per_game,
+    adr_total / NULLIF(total_games_cum, 0) AS adr_per_game,
+    kast_total / NULLIF(total_games_cum, 0) AS kast_per_game,
+    rating_total / NULLIF(total_games_cum, 0) AS rating_per_game
 
 FROM (
     SELECT
@@ -86,7 +85,7 @@ WINDOW w AS (
     ORDER BY begin_at, game_id
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 );
-- +goose StatementEnd
+-- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
